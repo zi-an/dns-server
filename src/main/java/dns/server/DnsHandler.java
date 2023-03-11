@@ -36,7 +36,8 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
         domainIpMapping.put("210.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 210});
         domainIpMapping.put("ws.p2p.huya.com.", DnsConfig.default_ip);
         domainIpMapping.put("update.miui.com.", DnsConfig.default_ip);
-        domainIpMapping.put("qsb.browser.miui.srv.", DnsConfig.default_ip);
+        domainIpMapping.put("arm.lczzjj.cn.", DnsConfig.default_ip);
+        //酷我音乐,耗子版需要屏蔽
     }
 
     @Override
@@ -48,7 +49,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
             ByteBuf byteBuf;
             String domain = dnsQuestion.name();
-            System.out.print(datagramDnsQuery.sender().getAddress().getHostAddress()+",");
+            System.out.print(System.currentTimeMillis()+","+datagramDnsQuery.sender().getAddress().getHostAddress()+",");
             //打印客户端ip
             if (domainIpMapping.containsKey(dnsQuestion.name())) {
                 //如果在ipMapping表中的,返回结果
