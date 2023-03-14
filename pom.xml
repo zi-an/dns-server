@@ -19,7 +19,6 @@
     </dependencies>
 
      <build>
-
             <plugins>
                 <plugin>
                     <!--将依赖打包-->

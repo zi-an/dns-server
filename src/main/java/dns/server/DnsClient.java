@@ -26,6 +26,9 @@ import io.netty.handler.codec.dns.DnsSection;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 从netty的demo里抄的
+ */
 public class DnsClient {
     private byte[] ip;
 
@@ -54,7 +57,7 @@ public class DnsClient {
                     .channel(NioDatagramChannel.class)
                     .handler(new ChannelInitializer<DatagramChannel>() {
                         @Override
-                        protected void initChannel(DatagramChannel ch) throws Exception {
+                        protected void initChannel(DatagramChannel ch)  {
                             ChannelPipeline p = ch.pipeline();
                             p.addLast(new DatagramDnsQueryEncoder())
                                     .addLast(new DatagramDnsResponseDecoder())
@@ -83,11 +86,12 @@ public class DnsClient {
             }
             group.shutdownGracefully();
 
-            return (ip == null) ? DnsConfig.default_ip : ip;
+            return (ip == null) ? new byte[]{0, 0, 0, 0} : ip;
             //如果上游dns有记录则返回记录,没记录则返回127.0.0.1
+            //return ip;
         } catch (InterruptedException e) {
             group.shutdownGracefully();
-            return DnsConfig.default_ip;
+            return null;
         }
     }
 }

@@ -1,9 +1,15 @@
 package ltyyz;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.dns.*;
+import io.netty.handler.codec.dns.DatagramDnsQuery;
+import io.netty.handler.codec.dns.DatagramDnsResponse;
+import io.netty.handler.codec.dns.DefaultDnsQuestion;
+import io.netty.handler.codec.dns.DefaultDnsRawRecord;
+import io.netty.handler.codec.dns.DnsRecordType;
+import io.netty.handler.codec.dns.DnsSection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +37,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
             } else {
                 // 不在 ipMapping表中的 域名,这里可以替代掉
-                buf = Unpooled.wrappedBuffer(new byte[] { 127, 0, 0, 1});
+                buf = Unpooled.wrappedBuffer(new byte[]{127, 0, 0, 1});
 
             }
 

@@ -1,7 +1,7 @@
 package dns.server;
 
-/*
-全局配置方法,从config.properties中读取
+/**
+ * 全局配置方法,从config.properties中读取
  */
 public class DnsConfig {
 

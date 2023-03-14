@@ -12,7 +12,6 @@ import io.netty.handler.codec.dns.DnsRecordType;
 import io.netty.handler.codec.dns.DnsSection;
 import io.netty.util.NetUtil;
 
-import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,22 +48,26 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
             ByteBuf byteBuf;
             String domain = dnsQuestion.name();
-            System.out.print(System.currentTimeMillis()+","+datagramDnsQuery.sender().getAddress().getHostAddress()+",");
+            String logs = System.currentTimeMillis() + "," + datagramDnsQuery.sender().getAddress().getHostAddress() + ",";
+            //日志,等数据准备完毕再打印,减小消耗
+            //System.out.print(System.currentTimeMillis()+","+datagramDnsQuery.sender().getAddress().getHostAddress()+",");
             //打印客户端ip
             if (domainIpMapping.containsKey(dnsQuestion.name())) {
                 //如果在ipMapping表中的,返回结果
                 byteBuf = Unpooled.wrappedBuffer(domainIpMapping.get(dnsQuestion.name()));
-                System.out.printf("cache,%s,%s%n", domain, NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
-
+                //System.out.printf("cache,%s,%s%n", domain, NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
+                logs += "cache," + domain + "," + NetUtil.bytesToIpAddress(domainIpMapping.get(domain));
             } else {
                 // 不在 ipMapping表中的域名,从上游dns获取后加入到ipMapping表中
                 byte[] result = new DnsClient().query(domain.substring(0, domain.length() - 1));
-
                 byteBuf = Unpooled.wrappedBuffer(result);
-                domainIpMapping.put(dnsQuestion.name(), result);
-                System.out.printf("storage,%s,%s%n", domain, NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
+                if (result[0] != 0) {
+                    domainIpMapping.put(dnsQuestion.name(), result);
+                    //System.out.printf("storage,%s,%s%n", domain, NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
+                }
+                logs += "storage," + domain + "," + NetUtil.bytesToIpAddress(result);
             }
-
+            System.out.println(logs);
             DefaultDnsRawRecord queryAnswer = new DefaultDnsRawRecord(dnsQuestion.name(),
                     DnsRecordType.A, DnsConfig.default_ttl, byteBuf);
             datagramDnsResponse.addRecord(DnsSection.ANSWER, queryAnswer);

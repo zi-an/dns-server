@@ -16,7 +16,12 @@ public class DnsServer {
 
     // DNS Server 国际标准 53 端口
     int port = 53;
-    String host ="192.168.10.7";
+    String host = "192.168.10.7";
+
+    public static void main(String[] args) {
+        DnsServer dnsServer = new DnsServer();
+        dnsServer.listenAndRun(dnsServer.port);
+    }
 
     public void listenAndRun(int port) {
         final NioEventLoopGroup group = new NioEventLoopGroup();
@@ -32,7 +37,7 @@ public class DnsServer {
                         }
                     }).option(ChannelOption.SO_BROADCAST, true);
 
-            ChannelFuture future = bootstrap.bind(host,port).sync();
+            ChannelFuture future = bootstrap.bind(host, port).sync();
             future.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {
@@ -40,10 +45,5 @@ public class DnsServer {
         } finally {
             group.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) {
-        DnsServer dnsServer = new DnsServer();
-        dnsServer.listenAndRun(dnsServer.port);
     }
 }
