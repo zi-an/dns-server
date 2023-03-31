@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>服务器信息</title>
+    <script src="./echarts-all.js"></script>
+    <script src="jquery.min.js"></script>
+</head>
+<body>
+<div id="mem" style="height:800px;"></div>
+<script>
+    let data;
+    let mem = echarts.init(document.getElementById('mem'));
+    $.getJSON("./mem", function (mem_json) {
+            data = {data: [{"value": (mem_json.total - mem_json.available-mem_json.jvm), "name": "已用"}, {"value": mem_json.available, "name": "剩余"},{
+                    "value": mem_json.jvm, "name": "jvm"}]}
+        mem.setOption({
+            series: [
+                {
+                    name: '饼图',
+                    type: 'pie',
+                    radius: '80%',
+                    data: data.data,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true,
+                                formatter: '{b}内存\n{d}%--{c}m\n',
+                                textStyle: {
+                                    align: 'center',
+                                    baseline: 'middle',
+                                    fontSize: 15,
+                                    fontWeight: 'bolder'
+                                }
+                            },
+                            labelLine: {
+                                show: false
+                            }
+                        }
+                    },
+                }
+            ]
+        })
+    });
+
+</script>
+</body>
+</html>
+<!--https://codeload.github.com/apache/echarts/zip/refs/tags/2.2.4-->
+<!--
+{
+	"physicalMemory": [{
+		"bankLabel": "P0 CHANNEL A",
+		"capacity": 8589934592,
+		"clockSpeed": 3200000000,
+		"manufacturer": "Samsung",
+		"memoryType": "DDR4"
+	}, {
+		"bankLabel": "P0 CHANNEL B",
+		"capacity": 8589934592,
+		"clockSpeed": 3200000000,
+		"manufacturer": "Samsung",
+		"memoryType": "DDR4"
+	}],
+	"total": 14877257728,
+	"pageSize": 4096,
+	"virtualMemory": {
+		"swapTotal": 4444504064,
+		"virtualMax": 19321761792,
+		"virtualInUse": 14714548224,
+		"swapPagesOut": 2239321,
+		"swapPagesIn": 3091278,
+		"swapUsed": 904466432
+	},
+	"available": 3926208512
+}
+-->
