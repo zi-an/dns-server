@@ -1,3 +1,4 @@
+/*仅仅为测试用SQL*/
 drop table if exists logs;
 create table if not exists  logs
 (

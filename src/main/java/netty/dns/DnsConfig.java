@@ -3,6 +3,12 @@ package netty.dns;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
 @ConfigurationProperties("netty.dns")
 @Component
 public class DnsConfig {
@@ -30,6 +36,42 @@ public class DnsConfig {
      * 默认有效时间
      */
     private int defaultTtl = 3600;
+
+    {
+        //windows 10的系统服务会把127.0.0.1的53端口绑定,导致异常,这里自动获取192段地址
+        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+            {
+                // 获得本机的所有网络接口
+                Enumeration<NetworkInterface> networkInterfaces;
+                try {
+                    networkInterfaces = NetworkInterface.getNetworkInterfaces();
+
+                    //找到192的标志,找到跳出所有循环
+                    boolean flags = false;
+                    //遍历ip,找到192段的ip
+                    while (networkInterfaces.hasMoreElements()) {
+                        NetworkInterface networkInterface = networkInterfaces.nextElement();
+                        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                        if (flags) break;
+                        while (addresses.hasMoreElements()) {
+                            InetAddress addr = addresses.nextElement();
+                            // 只关心 IPv4 地址
+                            if (addr instanceof Inet4Address && addr.getHostAddress().contains("192.")) {
+                                localhostDnsHost = addr.getHostAddress();
+                                flags = true;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } else {
+            localhostDnsHost = "0.0.0.0";
+        }
+    }
 
     public String getLocalhostDnsHost() {
         return localhostDnsHost;
@@ -73,16 +115,5 @@ public class DnsConfig {
 
     public void setDefaultTtl(int defaultTtl) {
         this.defaultTtl = defaultTtl;
-    }
-
-
-    {
-        //windows 10的系统服务会把127.0.0.1的53端口绑定,导致异常
-        if (System.getProperties().getProperty("os.name").toUpperCase().contains("WINDOWS")) {
-            //return "0.0.0.0";
-            localhostDnsHost = "192.168.10.7";
-        } else {
-            localhostDnsHost = "0.0.0.0";
-        }
     }
 }

@@ -7,8 +7,8 @@
           name="viewport">
     <title>Netty-Dns</title>
     <link href="favicon.ico" rel="icon"/>
-    <link href="./bootstrap.min.css" rel="stylesheet">
-    <script src="./jquery.min.js"></script>
+    <link href="resources/bootstrap.min.css" rel="stylesheet">
+    <script src="resources/jquery.min.js"></script>
 </head>
 <style>
     button {
@@ -20,11 +20,11 @@
     <!--<caption>DNS查询日志</caption>-->
     <thead>
     <tr>
-        <th>ID</th>
-        <th>时间</th>
-        <th style="word-break: keep-all">主机</th>
+        <th style="text-align: center">ID</th>
+        <th style="text-align: center">时间</th>
+        <th  style="word-break: keep-all;text-align: center">主机</th>
         <th >查找域名</th>
-        <th>IP</th>
+        <th style="text-align: center">IP</th>
     </tr>
     </thead>
     <tbody id="tbody">
@@ -35,7 +35,7 @@
            type="button"
            value="服务器内存">
 </a>
-<input class="form-control  form-control-lg" id="text" placeholder="客户ID"
+<input class="form-control  form-control-lg" id="text" placeholder="主机地址"
        style="background: transparent;color:blue;position: fixed;bottom: 5rem;right: 35%;width: 30%"
        type="text">
 <!--
@@ -62,8 +62,8 @@
             let result = "";
             for (let i = 0; i < data.length; i++) {
                 result += "<tr><td>" + data[i].id + "</td>";
-                result += "<td>" + data[i].time.slice(11) + "</td>";
-                result += "<td align=\"right\" >" + data[i].client.slice(11) + "</td>";
+                result += "<td align='center'>" + data[i].time.slice(11) + "</td>";
+                result += "<td align='center' >" + data[i].client.slice(11) + "</td>";
                 result += "<td style=\"word-break: break-all\">" + data[i].name + "</td>";
                 result += "<td>" + data[i].ip + "</td></tr>";
             }
