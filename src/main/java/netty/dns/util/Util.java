@@ -14,4 +14,7 @@ public class Util {
         return bytes;
     }
 
+    public static void main(String[] args) {
+        ip2byte("192.168.10.1");
+    }
 }
