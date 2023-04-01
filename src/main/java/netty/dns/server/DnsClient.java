@@ -22,6 +22,7 @@ import io.netty.handler.codec.dns.DnsRawRecord;
 import io.netty.handler.codec.dns.DnsRecord;
 import io.netty.handler.codec.dns.DnsRecordType;
 import io.netty.handler.codec.dns.DnsSection;
+import netty.dns.DnsConfig;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +31,8 @@ import java.util.concurrent.TimeUnit;
  * 从netty的demo里抄的
  */
 public class DnsClient {
+    private DnsConfig dnsConfig= BeanContext.getApplicationContext().getBean(DnsConfig.class);
+
     private byte[] ip;
 
     private void handleQueryResp(DatagramDnsResponse msg) {
@@ -49,7 +52,7 @@ public class DnsClient {
     }
 
     public byte[] query(String domain) {
-        InetSocketAddress addr = new InetSocketAddress(DnsConfig.remote_dns_host, DnsConfig.remote_dns_port);
+        InetSocketAddress addr = new InetSocketAddress(dnsConfig.getRemoteDnsHost(), dnsConfig.getRemoteDnsPort());
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();

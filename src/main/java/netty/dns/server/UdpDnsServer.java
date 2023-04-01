@@ -8,9 +8,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.codec.dns.DatagramDnsQueryDecoder;
 import io.netty.handler.codec.dns.DatagramDnsResponseEncoder;
+import netty.dns.DnsConfig;
 
 public class UdpDnsServer {
-
+    DnsConfig dnsConfig=  BeanContext.getApplicationContext().getBean(DnsConfig.class);
     public static void main(String[] args) {
         UdpDnsServer dnsServer = new UdpDnsServer();
         dnsServer.listenAndRun();
@@ -30,7 +31,7 @@ public class UdpDnsServer {
                         }
                     }).option(ChannelOption.SO_BROADCAST, true);
 
-            ChannelFuture future = bootstrap.bind(DnsConfig.localhost_dns_host, DnsConfig.localhost_dns_port).sync();
+            ChannelFuture future = bootstrap.bind(dnsConfig.getLocalhostDnsHost(), dnsConfig.getLocalhostDnsPort()).sync();
             future.channel().closeFuture().sync();
 
         } catch (InterruptedException e) {

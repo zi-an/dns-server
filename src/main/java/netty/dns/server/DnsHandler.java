@@ -11,6 +11,7 @@ import io.netty.handler.codec.dns.DefaultDnsRawRecord;
 import io.netty.handler.codec.dns.DnsRecordType;
 import io.netty.handler.codec.dns.DnsSection;
 import io.netty.util.NetUtil;
+import netty.dns.DnsConfig;
 import netty.dns.dao.LogsEntity;
 import netty.dns.dao.LogsMapper;
 
@@ -20,7 +21,9 @@ import java.util.Map;
 public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
     private final Map<String, byte[]> domainIpMapping = new HashMap<>();
 
-  private   LogsMapper logsMapper;
+    private final LogsMapper logsMapper;
+
+    DnsConfig dnsConfig=  BeanContext.getApplicationContext().getBean(DnsConfig.class);
 
     public DnsHandler() {
         // 本地加一些临时数据，正确做法是入库
@@ -39,11 +42,11 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
         domainIpMapping.put("209.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 209});
         domainIpMapping.put("210.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 210});
         domainIpMapping.put("222.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 222});
-        domainIpMapping.put("ws.p2p.huya.com.", DnsConfig.default_ip);
-        domainIpMapping.put("update.miui.com.", DnsConfig.default_ip);
-        domainIpMapping.put("arm.lczzjj.cn.", DnsConfig.default_ip);
+        domainIpMapping.put("ws.p2p.huya.com.", dnsConfig.getDefaultIp());
+        domainIpMapping.put("update.miui.com.", dnsConfig.getDefaultIp());
+        domainIpMapping.put("arm.lczzjj.cn.", dnsConfig.getDefaultIp());
         //酷我音乐,耗子版需要屏蔽
-        logsMapper=BeanContext.getApplicationContext().getBean(LogsMapper.class);
+        logsMapper = BeanContext.getApplicationContext().getBean(LogsMapper.class);
     }
 
     public void channelRead0(ChannelHandlerContext ctx, DatagramDnsQuery datagramDnsQuery) {
@@ -54,11 +57,9 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
             ByteBuf byteBuf;
             String domain = dnsQuestion.name();
-            //String logs = System.currentTimeMillis() + "," + datagramDnsQuery.sender().getAddress().getHostAddress() + ",";
             if (domainIpMapping.containsKey(dnsQuestion.name())) {
                 //如果在ipMapping表中的,返回结果
                 byteBuf = Unpooled.wrappedBuffer(domainIpMapping.get(dnsQuestion.name()));
-                //logs += "cache," + domain + "," + NetUtil.bytesToIpAddress(domainIpMapping.get(domain));
             } else {
                 // 不在 ipMapping表中的域名,从上游dns获取后加入到ipMapping表中
                 byte[] result = new DnsClient().query(domain.substring(0, domain.length() - 1));
@@ -66,17 +67,14 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
                 if (result[0] != 0) {
                     domainIpMapping.put(dnsQuestion.name(), result);
                 }
-                //logs += "storage," + domain + "," + NetUtil.bytesToIpAddress(result);
             }
-            //System.out.println(logs);
             DefaultDnsRawRecord queryAnswer = new DefaultDnsRawRecord(dnsQuestion.name(),
-                    DnsRecordType.A, DnsConfig.default_ttl, byteBuf);
+                    DnsRecordType.A, dnsConfig.getDefaultTtl(), byteBuf);
             datagramDnsResponse.addRecord(DnsSection.ANSWER, queryAnswer);
-            LogsEntity logsEntity = new LogsEntity(  String.valueOf(System.currentTimeMillis() / 1000), "1", datagramDnsQuery.sender().getAddress().getHostAddress(),
-                   domain,
+            LogsEntity logsEntity = new LogsEntity(String.valueOf(System.currentTimeMillis() / 1000), "1", datagramDnsQuery.sender().getAddress().getHostAddress(),
+                    domain,
                     NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
-            logsMapper.insertOne(logsEntity);
-            //System.out.println(logsEntity);
+            logsMapper.insertOne(logsEntity); 
         } catch (Exception e) {
             System.out.println("exception:" + e);
         } finally {
