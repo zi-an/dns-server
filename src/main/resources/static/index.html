@@ -2,44 +2,48 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport">
     <title>Netty-Dns</title>
-    <link rel="icon" href="favicon.ico"/>
-    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link href="favicon.ico" rel="icon"/>
+    <link href="./bootstrap.min.css" rel="stylesheet">
     <script src="./jquery.min.js"></script>
 </head>
 <style>
-    button{
+    button {
         height: 30px;
     }
 </style>
 <body style="width: 100%">
-<table class="table" id="load" >
+<table class="table table-condensed" id="load">
     <!--<caption>DNS查询日志</caption>-->
     <thead>
     <tr>
         <th>ID</th>
         <th>时间</th>
-        <th>客户</th>
-        <th>域名</th>
+        <th style="word-break: keep-all">主机</th>
+        <th >查找域名</th>
         <th>IP</th>
     </tr>
     </thead>
     <tbody id="tbody">
     </tbody>
-</table><a href="./mem.html">
-<input type="button" value="服务器内存"   class="btn btn-default "
-       style="color:blue;position: fixed;bottom: 5rem;left: 1%;">
+</table>
+<a href="./mem.html">
+    <input class="btn btn-default " style="background: transparent;color:blue;position: fixed;bottom: 5rem;left: 1%;"
+           type="button"
+           value="服务器内存">
 </a>
-
-    <input type="text" class="form-control  form-control-lg" placeholder="客户ID" id="text"
-           style="color:blue;position: fixed;bottom: 5rem;right: 35%;width: 30%">
- <!--
+<input class="form-control  form-control-lg" id="text" placeholder="客户ID"
+       style="background: transparent;color:blue;position: fixed;bottom: 5rem;right: 35%;width: 30%"
+       type="text">
+<!--
 <input type="text" placeholder="服务器IP最后一位" id="text" class="form-control"
-       style="color:blue;position: fixed;bottom: 5rem;left: 30rem ">
---><input type="button" value="已暂停刷新" id="autoflash" class="btn btn-default "
-       style="color:blue;position: fixed;bottom: 5rem;right: 1%;">
+      style="color:blue;position: fixed;bottom: 5rem;left: 30rem ">
+--><input class="btn btn-default " id="autoflash"
+          style="background: transparent;color:blue;position: fixed;bottom: 5rem;right: 1%;" type="button"
+          value="已暂停刷新">
 </body>
 <script type="text/javascript">
     //页面存在的最大ID
@@ -48,19 +52,19 @@
     let flash = false;
     //线程ID,与flash组合,再次点击自动刷刷新按钮杀线程
     let thread;
-let ip=0;
+    let ip = 0;
     $(document).ready(function () {
         loadJson();
     })
 
     function loadJson() {
-        $.getJSON("./getAll?maxid=" + maxid+"&ip="+ip, function (data) {
+        $.getJSON("./getAll?maxid=" + maxid + "&ip=" + ip, function (data) {
             let result = "";
             for (let i = 0; i < data.length; i++) {
                 result += "<tr><td>" + data[i].id + "</td>";
                 result += "<td>" + data[i].time.slice(11) + "</td>";
-                result += "<td>" + data[i].client.slice(11) + "</td>";
-                result += "<td>" + data[i].name + "</td>";
+                result += "<td align=\"right\" >" + data[i].client.slice(11) + "</td>";
+                result += "<td style=\"word-break: break-all\">" + data[i].name + "</td>";
                 result += "<td>" + data[i].ip + "</td></tr>";
             }
             $('#tbody').prepend(result);
@@ -84,7 +88,7 @@ let ip=0;
         });
         $('#text').change(function () {
             $('#tbody').children().remove();
-            ip= '192.168.10.'+$('#text').val();
+            ip = '192.168.10.' + $('#text').val();
             maxid = 0;
             loadJson();
         })
