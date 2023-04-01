@@ -2,34 +2,43 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport">
     <title>服务器信息</title>
     <script src="resources/echarts-all.js"></script>
     <script src="resources/jquery.min.js"></script>
 </head>
 <body>
-<div id="mem" style="height:800px;"></div>
+<div id="mem" style="height:600px;"></div>
 <script>
     let data;
     let mem = echarts.init(document.getElementById('mem'));
     $.getJSON("./mem", function (mem_json) {
-            data = {data: [{"value": (mem_json.total - mem_json.available-mem_json.jvm), "name": "已用"}, {"value": mem_json.available, "name": "剩余"},{
-                    "value": mem_json.jvm, "name": "jvm"}]}
+        data = {
+            data: [{
+                "value": (mem_json.total - mem_json.available - mem_json.jvm),
+                "name": "已用"
+            }, {"value": mem_json.available, "name": "剩余"}, {
+                "value": mem_json.jvm, "name": "JVM"
+            }]
+        }
         mem.setOption({
             series: [
                 {
                     name: '饼图',
                     type: 'pie',
-                    radius: '80%',
+                    radius: '60%',
                     data: data.data,
                     itemStyle: {
                         normal: {
                             label: {
                                 show: true,
-                                formatter: '{b}内存\n{d}%--{c}m\n',
+                                formatter: '{b}内存\n{c}m\n{d}%\n',
                                 textStyle: {
                                     align: 'center',
                                     baseline: 'middle',
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     fontWeight: 'bolder'
                                 }
                             },
