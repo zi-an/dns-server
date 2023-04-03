@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
+    //final让Map指向一个内存块,Map的操作只是让内存块内的数据替换,指向的区域没有变化
     private final Map<String, byte[]> domainIpMapping = new HashMap<>();
 
     private final LogsMapper logsMapper;

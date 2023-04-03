@@ -10,7 +10,9 @@ import java.util.List;
 
 @Mapper
 public interface RecordsMapper {
-    @Select("select * from records order by id")
+    @Select("select * from records " +
+            "where domain not like '%.mm' " +
+            "order by id ")
     List<Records> selectAll();
 
     @Insert("insert into records(domain,ip) " +

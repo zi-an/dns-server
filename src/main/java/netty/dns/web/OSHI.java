@@ -10,7 +10,8 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 
-@RestController("/system")
+@RestController
+@RequestMapping("/system")
 public class OSHI {
     @RequestMapping("/cpu")
     @CrossOrigin
@@ -28,16 +29,17 @@ public class OSHI {
     }
 
     @RequestMapping("/mem")
-    @CrossOrigin //允许跨域调试
+    @CrossOrigin
+        //允许跨域调试
     Mem menInfo() {
         ObjectMapper mapper = new ObjectMapper();
         SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
         GlobalMemory globalMemory = hal.getMemory();
-        Mem mem=new Mem(globalMemory.getTotal(),globalMemory.getAvailable(),Runtime.getRuntime().totalMemory());
+        return new Mem(globalMemory.getTotal(), globalMemory.getAvailable(), Runtime.getRuntime().totalMemory());
         //System.out.println(Runtime.getRuntime().maxMemory());
-        return mem;
     }
+
     class Mem {
         private long total;
         private long available;
@@ -68,9 +70,9 @@ public class OSHI {
         }
 
         public Mem(long total, long available, long jvm) {
-            this.total = total/1024/1024;
-            this.available = available/1024/1024;
-            this.jvm = jvm/1024/1024;
+            this.total = total / 1024 / 1024;
+            this.available = available / 1024 / 1024;
+            this.jvm = jvm / 1024 / 1024;
         }
     }
 }

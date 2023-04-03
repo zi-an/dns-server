@@ -3,8 +3,11 @@ package netty.dns;
 import netty.dns.server.UdpDnsServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication
+@EnableScheduling
 public class DnsApplication {
 
     public static void main(String[] args) {

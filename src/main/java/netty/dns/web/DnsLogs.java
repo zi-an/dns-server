@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-@RestController("/logs")
+@RestController
+@RequestMapping("/logs")
 public class DnsLogs {
     @Resource
     LogsMapper mapper;
@@ -29,7 +30,7 @@ public class DnsLogs {
             return mapper.selectAll(id);
         } else {
             //System.out.println(ip+mapper.selectByIP(id, ip).toString());
-            return  mapper.selectByIP(id, ip);
+            return mapper.selectByIP(id, ip);
         }
     }
 

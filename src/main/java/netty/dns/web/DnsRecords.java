@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.List;
 
-@RestController("/record")
+@RestController
+@RequestMapping("/record")
 public class DnsRecords {
     @Resource
     RecordsMapper recordsMapper;

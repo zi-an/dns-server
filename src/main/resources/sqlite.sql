@@ -56,3 +56,5 @@ from records;
 
 /*sqlite3.7.11以上才支持多行插入*/
 select * from records order by id;
+
+select * from records where domain not like '%.mm' order by id ;
