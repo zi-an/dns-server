@@ -14,7 +14,7 @@
 <script>
     let data;
     let mem = echarts.init(document.getElementById('mem'));
-    $.getJSON("./mem", function (mem_json) {
+    $.getJSON("./system/mem", function (mem_json) {
         data = {
             data: [{
                 "value": (mem_json.total - mem_json.available - mem_json.jvm),

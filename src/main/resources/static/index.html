@@ -58,7 +58,7 @@
     })
 
     function loadJson() {
-        $.getJSON("./getAll?maxid=" + maxid + "&ip=" + ip, function (data) {
+        $.getJSON("./logs/getAll?maxid=" + maxid + "&ip=" + ip, function (data) {
             let result = "";
             for (let i = 0; i < data.length; i++) {
                 result += "<tr><td>" + data[i].id + "</td>";

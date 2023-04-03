@@ -23,5 +23,5 @@ public interface LogsMapper {
     @Insert("insert into logs(time,type,client,name,ip) values(#{time},#{type},#{client},#{name},#{ip})")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
         //返回自增主键到logs.id,否则只有成功失败
-    int insertOne(LogsEntity logs);
+    boolean insertOne(LogsEntity logs);
 }

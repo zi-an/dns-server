@@ -10,7 +10,7 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 
-@RestController
+@RestController("/system")
 public class OSHI {
     @RequestMapping("/cpu")
     @CrossOrigin
@@ -35,7 +35,7 @@ public class OSHI {
         HardwareAbstractionLayer hal = si.getHardware();
         GlobalMemory globalMemory = hal.getMemory();
         Mem mem=new Mem(globalMemory.getTotal(),globalMemory.getAvailable(),Runtime.getRuntime().totalMemory());
-        System.out.println(Runtime.getRuntime().maxMemory());
+        //System.out.println(Runtime.getRuntime().maxMemory());
         return mem;
     }
     class Mem {
