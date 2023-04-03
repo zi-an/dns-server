@@ -12,42 +12,23 @@ import io.netty.handler.codec.dns.DnsRecordType;
 import io.netty.handler.codec.dns.DnsSection;
 import io.netty.util.NetUtil;
 import netty.dns.DnsConfig;
-import netty.dns.dao.LogsEntity;
-import netty.dns.dao.LogsMapper;
+import netty.dns.dao.LogEntity;
+import netty.dns.dao.LogMapper;
+import netty.dns.dao.Record;
+import netty.dns.dao.RecordMapper;
+import netty.dns.util.Util;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
-    //final让Map指向一个内存块,Map的操作只是让内存块内的数据替换,指向的区域没有变化
-    private final Map<String, byte[]> domainIpMapping = new HashMap<>();
 
-    private final LogsMapper logsMapper;
+    private final LogMapper logsMapper;
 
-    DnsConfig dnsConfig=  BeanContext.getApplicationContext().getBean(DnsConfig.class);
+    DnsConfig dnsConfig = BeanContext.getApplicationContext().getBean(DnsConfig.class);
 
     public DnsHandler() {
-        // 本地加一些临时数据，正确做法是入库
-        domainIpMapping.put("1.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, 1});
-        domainIpMapping.put("5.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, 5});
-        domainIpMapping.put("7.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, 7});
-        domainIpMapping.put("200.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 200});
-        domainIpMapping.put("201.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 201});
-        domainIpMapping.put("202.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 202});
-        domainIpMapping.put("203.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 23});
-        domainIpMapping.put("204.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 204});
-        domainIpMapping.put("205.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 205});
-        domainIpMapping.put("206.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 206});
-        domainIpMapping.put("207.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 207});
-        domainIpMapping.put("208.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 208});
-        domainIpMapping.put("209.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 209});
-        domainIpMapping.put("210.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 210});
-        domainIpMapping.put("222.mm.", new byte[]{(byte) 192, (byte) 168, (byte) 10, (byte) 222});
-        domainIpMapping.put("ws.p2p.huya.com.", dnsConfig.getDefaultIp());
-        domainIpMapping.put("update.miui.com.", dnsConfig.getDefaultIp());
-        domainIpMapping.put("arm.lczzjj.cn.", dnsConfig.getDefaultIp());
-        //酷我音乐,耗子版需要屏蔽
-        logsMapper = BeanContext.getApplicationContext().getBean(LogsMapper.class);
+        logsMapper = BeanContext.getApplicationContext().getBean(LogMapper.class);
     }
 
     public void channelRead0(ChannelHandlerContext ctx, DatagramDnsQuery datagramDnsQuery) {
@@ -57,25 +38,30 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
             datagramDnsResponse.addRecord(DnsSection.QUESTION, dnsQuestion);
 
             ByteBuf byteBuf;
+            //DefaultDnsRawRecord里域名是带顶级的.
+            //所以带.的用dnsQuestion.name(),日常用的不带.的用domain
             String domain = dnsQuestion.name();
-            if (domainIpMapping.containsKey(dnsQuestion.name())) {
+            domain = domain.substring(0, domain.length() - 1);
+            if (DnsCache.getDomainIpMapping().containsKey(domain)) {
                 //如果在ipMapping表中的,返回结果
-                byteBuf = Unpooled.wrappedBuffer(domainIpMapping.get(dnsQuestion.name()));
+                byteBuf = Unpooled.wrappedBuffer(DnsCache.getDomainIpMapping().get(domain));
             } else {
                 // 不在 ipMapping表中的域名,从上游dns获取后加入到ipMapping表中
-                byte[] result = new DnsClient().query(domain.substring(0, domain.length() - 1));
+                byte[] result = new DnsClient().query(domain);
                 byteBuf = Unpooled.wrappedBuffer(result);
                 if (result[0] != 0) {
-                    domainIpMapping.put(dnsQuestion.name(), result);
+                    DnsCache.getDomainIpMapping().put(domain, result);
                 }
             }
             DefaultDnsRawRecord queryAnswer = new DefaultDnsRawRecord(dnsQuestion.name(),
                     DnsRecordType.A, dnsConfig.getDefaultTtl(), byteBuf);
             datagramDnsResponse.addRecord(DnsSection.ANSWER, queryAnswer);
-            LogsEntity logsEntity = new LogsEntity(String.valueOf(System.currentTimeMillis() / 1000), "1", datagramDnsQuery.sender().getAddress().getHostAddress(),
+            LogEntity logsEntity = new LogEntity(String.valueOf(System.currentTimeMillis() / 1000),
+                    "1",
+                    datagramDnsQuery.sender().getAddress().getHostAddress(),
                     domain,
-                    NetUtil.bytesToIpAddress(domainIpMapping.get(domain)));
-            logsMapper.insertOne(logsEntity); 
+                    NetUtil.bytesToIpAddress(DnsCache.getDomainIpMapping().get(domain)));
+            logsMapper.insertOne(logsEntity);
         } catch (Exception e) {
             System.out.println("exception:" + e);
         } finally {

@@ -1,13 +1,13 @@
 package netty.dns.dao;
 
 
-public class Records {
+public class Record {
 
     private long id;
     private String domain;
     private String ip;
 
-    public Records(long id, String domain, String ip) {
+    public Record(long id, String domain, String ip) {
         this.id = id;
         this.domain = domain;
         this.ip = ip;

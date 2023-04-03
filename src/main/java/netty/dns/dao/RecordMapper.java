@@ -9,11 +9,9 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 @Mapper
-public interface RecordsMapper {
-    @Select("select * from records " +
-            "where domain not like '%.mm' " +
-            "order by id ")
-    List<Records> selectAll();
+public interface RecordMapper {
+    @Select("select * from records order by id ")
+    List<Record> selectAll();
 
     @Insert("insert into records(domain,ip) " +
             "values(#{domain},#{ip})")
@@ -24,5 +22,5 @@ public interface RecordsMapper {
 
     @Update("update records set ip=#{ip},domain=#{domain} " +
             "where id =#{id}")
-    int UpdateOne(Records records);
+    int UpdateOne(Record records);
 }

@@ -4,7 +4,7 @@ package netty.dns.util;
  * 工具类
  */
 public class Util {
-    static byte[] ip2byte(String ipAddr) {
+      public static  byte[] ip2byte(String ipAddr) {
         byte[] bytes = new byte[4];
         String[] ipArr = ipAddr.split("\\.");
         bytes[0] = (byte) (Integer.parseInt(ipArr[0]) & 0xFF);
@@ -15,6 +15,6 @@ public class Util {
     }
 
     public static void main(String[] args) {
-        ip2byte("192.168.10.1");
+        //ip2byte("192.168.10.1");
     }
 }

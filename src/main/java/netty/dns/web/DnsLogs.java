@@ -1,7 +1,7 @@
 package netty.dns.web;
 
-import netty.dns.dao.LogsEntity;
-import netty.dns.dao.LogsMapper;
+import netty.dns.dao.LogEntity;
+import netty.dns.dao.LogMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +15,13 @@ import java.util.List;
 @RequestMapping("/logs")
 public class DnsLogs {
     @Resource
-    LogsMapper mapper;
+    LogMapper mapper;
 
     private static final Logger logger = LoggerFactory.getLogger(DnsLogs.class);
 
     // http://127.0.0.1/getAll
     @RequestMapping("/getAll")
-    List<LogsEntity> getAll(@RequestParam(name = "maxid") int id, @RequestParam(name = "ip") String ip) {/*
+    List<LogEntity> getAll(@RequestParam(name = "maxid") int id, @RequestParam(name = "ip") String ip) {/*
         logger.debug("debug");
         logger.error("error");
         logger.info("info");*/
@@ -38,7 +38,7 @@ public class DnsLogs {
     @RequestMapping("/insert")
     long inertOne() {
         logger.info("已执行");
-        LogsEntity logs = new LogsEntity("1", "2", "3", "4", "5");
+        LogEntity logs = new LogEntity("1", "2", "3", "4", "5");
         mapper.insertOne(logs);
         return logs.getId();
     }

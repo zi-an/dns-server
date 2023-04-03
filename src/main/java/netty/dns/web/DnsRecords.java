@@ -1,7 +1,7 @@
 package netty.dns.web;
 
-import netty.dns.dao.Records;
-import netty.dns.dao.RecordsMapper;
+import netty.dns.dao.Record;
+import netty.dns.dao.RecordMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +13,10 @@ import java.util.List;
 @RequestMapping("/record")
 public class DnsRecords {
     @Resource
-    RecordsMapper recordsMapper;
+    RecordMapper recordsMapper;
 
     @RequestMapping("/all")
-    List<Records> selectAll() {
+    List<Record> selectAll() {
         return recordsMapper.selectAll();
     }
 
@@ -35,6 +35,6 @@ public class DnsRecords {
     int updateOne(@RequestParam(name = "id") int id,
                   @RequestParam(name = "domain") String domain,
                   @RequestParam(name = "ip") String ip) {
-        return recordsMapper.UpdateOne(new Records(id, domain, ip));
+        return recordsMapper.UpdateOne(new Record(id, domain, ip));
     }
 }

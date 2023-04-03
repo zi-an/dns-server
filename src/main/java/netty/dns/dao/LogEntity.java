@@ -1,6 +1,6 @@
 package netty.dns.dao;
 
-public class LogsEntity {
+public class LogEntity {
 
     private long id;
     private String time;
@@ -61,7 +61,7 @@ public class LogsEntity {
         this.ip = ip;
     }
 
-    public LogsEntity(String time, String type, String client, String name, String ip) {
+    public LogEntity(String time, String type, String client, String name, String ip) {
         this.time = time;
         this.type = type;
         this.client = client;
