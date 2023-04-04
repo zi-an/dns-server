@@ -13,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/logs")
-public class DnsLogs {
+public class DnsLog {
     @Resource
     LogMapper mapper;
 
-    private static final Logger logger = LoggerFactory.getLogger(DnsLogs.class);
+    private static final Logger logger = LoggerFactory.getLogger(DnsLog.class);
 
     // http://127.0.0.1/getAll
     @RequestMapping("/getAll")

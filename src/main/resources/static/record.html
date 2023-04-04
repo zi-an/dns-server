@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <title>DNS记录管理</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link href="resources/bootstrap.min.css" rel="stylesheet">
+    <script src="resources/jquery.min.js"></script>
+    <script src="resources/bootstrap.min.js"></script>
+</head>
+<body>
+<!-- 表格 -->
+<div class="container" style="padding-top: 40px;">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2">
+                <button class="btn btn-danger" data-toggle="modal" data-target="#myModel">增加</button>
+            </div>
+            <div class="col-md-8">
+                <input type="text" class="form-control swich"/>
+            </div>
+            <div class="col-md-2" style="text-align: right">
+                <button class="btn btn-primary sreach">搜索</button>
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered text-center">
+        <thead>
+        <tr>
+            <td>删除</td>
+            <td>编号</td>
+            <td>域名</td>
+            <td>地址</td>
+            <td>修改</td>
+        </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+</div>
+<!-- 修改的模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" id="updateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="update_modal">修改信息</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="编号" id="update_id" class="form-control" readonly="true"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="域名" id="update_domain" class="form-control" readonly="true"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="地址" id="update_ip" class="form-control"/>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+                <div class="col-md-9"></div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-primary olk" data-dismiss="modal">更改</button>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+<!-- 增加的模态框 -->
+<div class="modal fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" id="insertModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="add_modal">增加信息</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <input type="text" id="insert_id" class="form-control" readonly/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="名字" id="insert_domain" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="成绩" id="insert_ip" class="form-control"/>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                </div>
+                <div class="col-md-9"></div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-primary add" data-dismiss="modal">增加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    let delete_button = '<button class="btn btn-danger del">删除</button>';
+    let update_button = '<button class="btn btn-primary update" data-toggle="modal" data-target="#myModal">修改</button>';
+    $(document).ready(function () {
+        loadJson();
+    })
+
+    //加载数据
+    function loadJson() {
+        $.getJSON("./record/getData", function (data) {
+            let result = "";
+            for (let i = 0; i < data.length; i++) {
+                result += "<tr><td>" + delete_button + "</td>";
+                result += "<td>" + data[i].id + "</td>";
+                result += "<td>" + data[i].domain + "</td>";
+                result += "<td>" + data[i].ip + "</td>";
+                result += "<td>" + update_button + "</td></tr>";
+            }
+            $('#tbody').append(result);
+        })
+    }
+
+    //删除的功能
+    $(document).on("click", ".del", function () {
+        let delete_this = $(this);
+        let id = $(this).parents("td").next().text();
+        alert(id)
+        $.post("./record/delete?id=" + id, function (data) {
+            if (data == 1)
+                delete_this.parents("tr").remove();
+        })
+    })
+    //加载修改页的功能
+    let _this = null
+    $(document).on("click", ".update", function () {
+        let _arr = []
+        _this = $(this).parents("tr");
+        $("#update_id").val(_this.children('td').eq(1).text());
+        $("#update_domain").val(_this.children('td').eq(2).text());
+        $("#update_ip").val(_this.children('td').eq(3).text());
+
+    })
+    //点击确定后的动作
+    $(document).on("click", ".olk", function () {
+        $.post("./record/update?id=" + $("#update_id").val() + "&domain=" + $("#update_domain").val() + "&ip="
+            + $("#update_ip").val(), function (data) {
+            //$(this).children('td').append(delete_button);
+            _this.children('td').eq(1).text($("#update_id").val());
+            _this.children('td').eq(2).text($("#update_domain").val());
+            _this.children('td').eq(3).text($("#update_ip").val());
+            //$(_this).children('td').append(update_button)
+            alert("修改完毕")
+        })
+    })
+    //增加的功能
+    $(document).on("click", ".add", function () {
+        $.post("/record/insert", {domain: $("#insert_domain").val(), ip: $("#insert_ip").val()}, function (data) {
+            if (data > 0) {
+                let add_string = '<tr><td><button class="btn btn-danger del">删除</button></td>';
+                add_string += '<td>' + data + '</td>';
+                add_string += '<td>' + $("#insert_domain").val() + '</td>';
+                add_string += '<td>' + $("#insert_ip").val() + '</td>';
+                add_string += '<td>' + update_button + '</td></tr>';
+                $("#insert_id").val('');
+                $("#insert_domain").val('');
+                $("#insert_ip").val('');
+                $("#tbody").append(add_string);
+            }else if(data==0){
+                $("#insert_id").val("IP输入错误!");
+                $("#insertModal").modal('show');
+            }else if (data==-1){
+                $("#insert_id").val("域名已存在");
+
+            }alert()
+            $("#updateModal").modal('show');
+        })
+    })
+
+    //查的功能
+    $(".sreach").click(function () {
+        var oS = $(".swich").val()
+        if (oS.length == 0) {
+            alert("请输入点东西")
+        } else if ($("table tr td:contains('" + oS + "')").length == 0) {
+            alert("找不到数据")
+        } else {
+            $(".table tr:not(:first)").hide()
+            $(".table tr:contains('" + oS + "')").show().find("input").prop("checked", true)
+        }
+
+    })
+</script>
+</html>

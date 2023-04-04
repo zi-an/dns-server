@@ -9,11 +9,12 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.codec.dns.DatagramDnsQueryDecoder;
 import io.netty.handler.codec.dns.DatagramDnsResponseEncoder;
 import netty.dns.DnsConfig;
+import netty.dns.util.BeanContext;
 
-public class UdpDnsServer {
+public class DnsUdpServer {
     DnsConfig dnsConfig=  BeanContext.getApplicationContext().getBean(DnsConfig.class);
     public static void main(String[] args) {
-        UdpDnsServer dnsServer = new UdpDnsServer();
+        DnsUdpServer dnsServer = new DnsUdpServer();
         dnsServer.listenAndRun();
     }
 

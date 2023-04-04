@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bootstrap - 增删改查</title>
+    <script src="resources/jquery.min.js"></script>
+    <link href="resources/bootstrap.min.css" rel="stylesheet">
+    <script src="resources/bootstrap.min.js"></script>
+</head>
+<body>
+<!-- 表格 -->
+<div class="container" style="padding-top: 40px;">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-8">
+                <input type="text" class="form-control swich"/>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-danger sreach">搜索</button>
+                <button class="btn btn-default add" data-toggle="modal" data-target="#myModel">增加</button>
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered text-center">
+        <thead>
+        <tr>
+            <td>编号</td>
+            <td>域名</td>
+            <td>地址</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>张三</td>
+            <td>89</td>
+            <td>
+                <button class="btn btn-primary rev" data-toggle="modal" data-target="#myModal">修改</button>
+                <button class="btn btn-danger del">删除</button>
+            </td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>李四</td>
+            <td>91</td>
+            <td>
+                <button class="btn btn-primary rev" data-toggle="modal" data-target="#myModal">修改</button>
+                <button class="btn btn-danger del">删除</button>
+            </td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>刘一</td>
+            <td>80</td>
+            <td>
+                <button class="btn btn-primary rev" data-toggle="modal" data-target="#myModal">修改</button>
+                <button class="btn btn-danger del">删除</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- 修改的模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改信息</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="编号" id="reusrnum" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="名字" id="reusrname" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="成绩" class="form-control" id="rescore"/>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary olk" data-dismiss="modal">提交更改</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+<!-- 增加的模态框 -->
+<div class="modal fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" >增加信息</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <input type="text" placeholder="编号" id="reusrnum" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="名字" id="reusrname" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="成绩" class="form-control" id="rescore"/>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary aad" data-dismiss="modal">增加信息</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal -->
+</div>
+<script>
+
+    //删除的功能
+    $(document).on("click", ".del", function () {
+        $(this).parents("tr").remove()
+    })
+    //改的功能
+    var _this = null
+    $(document).on("click", ".rev", function () {
+        var _arr = []
+        _this = $(this).parents("tr")
+        $(this).parents("tr").find("td:not(:last)").each(function () {
+            _arr.push($(this).text())
+        })
+        $("#myModal").find("input").each(function (i) {
+            $(this).val(_arr[i])
+        })
+    })
+
+    $(document).on("click", ".olk", function () {
+        var _arr = []
+        $("#myModal").find("input").each(function () {
+            _arr.push($(this).val())
+        })
+        _this.find("td:not(:last)").each(function (i) {
+            $(this).text(_arr[i])
+        })
+    })
+    //增加的功能
+    $(document).on("click", ".aad", function () {
+        var _arr = []
+        var str = ""
+        $("#myModel").find("input").each(function () {
+            _arr.push($(this).val())
+
+        })
+
+        str = '<tr><td>' + _arr[0] + '</td><td>' + _arr[1] + '</td><td>' + _arr[2] + '</td><td><button class="btn btn-primary rev" data-toggle="modal" data-target="#myModal">修改</button> <button class="btn btn-danger del">删除</button></td></tr>'
+        $(".table").append(str)
+
+    })
+    //查的功能
+    $(".sreach").click(function () {
+        var oS = $(".swich").val()
+        if (oS.length == 0) {
+            alert("请输入点东西")
+        } else if ($("table tr td:contains('" + oS + "')").length == 0) {
+            alert("找不到数据")
+        } else {
+            $(".table tr:not(:first)").hide()
+            $(".table tr:contains('" + oS + "')").show().find("input").prop("checked", true)
+        }
+
+    })
+</script>
+</body>
+</html>

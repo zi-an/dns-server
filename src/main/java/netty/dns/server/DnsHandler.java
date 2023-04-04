@@ -14,21 +14,17 @@ import io.netty.util.NetUtil;
 import netty.dns.DnsConfig;
 import netty.dns.dao.LogEntity;
 import netty.dns.dao.LogMapper;
-import netty.dns.dao.Record;
-import netty.dns.dao.RecordMapper;
-import netty.dns.util.Util;
-
-import java.util.HashMap;
-import java.util.Map;
+import netty.dns.util.BeanContext;
 
 public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
-    private final LogMapper logsMapper;
+    private final LogMapper logMapper;
 
     DnsConfig dnsConfig = BeanContext.getApplicationContext().getBean(DnsConfig.class);
 
     public DnsHandler() {
-        logsMapper = BeanContext.getApplicationContext().getBean(LogMapper.class);
+        DnsCache.loadRecords();
+        logMapper = BeanContext.getApplicationContext().getBean(LogMapper.class);
     }
 
     public void channelRead0(ChannelHandlerContext ctx, DatagramDnsQuery datagramDnsQuery) {
@@ -61,7 +57,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
                     datagramDnsQuery.sender().getAddress().getHostAddress(),
                     domain,
                     NetUtil.bytesToIpAddress(DnsCache.getDomainIpMapping().get(domain)));
-            logsMapper.insertOne(logsEntity);
+            logMapper.insertOne(logsEntity);
         } catch (Exception e) {
             System.out.println("exception:" + e);
         } finally {

@@ -23,6 +23,7 @@ import io.netty.handler.codec.dns.DnsRecord;
 import io.netty.handler.codec.dns.DnsRecordType;
 import io.netty.handler.codec.dns.DnsSection;
 import netty.dns.DnsConfig;
+import netty.dns.util.BeanContext;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;

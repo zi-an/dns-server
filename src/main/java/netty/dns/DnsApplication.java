@@ -1,10 +1,9 @@
 package netty.dns;
 
-import netty.dns.server.UdpDnsServer;
+import netty.dns.server.DnsUdpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 @SpringBootApplication
 @EnableScheduling
@@ -15,7 +14,7 @@ public class DnsApplication {
         //程序pid
         //System.out.println("pid:"+ProcessHandle.current().pid());
         //启动DNS
-        UdpDnsServer dnsServer = new UdpDnsServer();
+        DnsUdpServer dnsServer = new DnsUdpServer();
         dnsServer.listenAndRun();
 
     }
