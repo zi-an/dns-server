@@ -10,11 +10,11 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
     @Select("select id,datetime(time,'unixepoch','localtime') as time"+
-            ",type,client,name,ip from logs where id > #{id} order by id desc limit 20 ")
+            ",type,client,name,ip from logs where id > #{id} order by id desc limit 100 ")
     List<LogEntity> selectAll(int id);
 
     @Select("select id,datetime(time,'unixepoch','localtime') as time"+
-            ",type,client,name,ip from logs where id > #{id} and client = #{ip} order by id desc limit 20 ")
+            ",type,client,name,ip from logs where id > #{id} and client = #{ip} order by id desc limit 100 ")
     List<LogEntity> selectByIP(int id, String ip);
 
     @Select("select * from logs order by id limit 100 desc")
