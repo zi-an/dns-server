@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          name="viewport">
+    <title>Netty-Dns</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link href="resources/bootstrap.min.css" rel="stylesheet">
+    <script src="resources/jquery.min.js"></script>
+</head>
+<style>
+    button {
+        height: 30px;
+    }
+</style>
+<body style="width: 100%">
+<table class="table table-condensed" id="load">
+    <!--<caption>DNS查询日志</caption>-->
+    <thead>
+    <tr>
+        <th style="text-align: center">ID</th>
+        <th style="text-align: center">时间</th>
+        <th style="word-break: keep-all;text-align: center">主机</th>
+        <th>查找域名</th>
+        <th>IP</th>
+    </tr>
+    </thead>
+    <tbody id="tbody">
+    </tbody>
+</table>
+<a href="./mem.html">
+    <input class="btn btn-default " style="background: transparent;color:blue;position: fixed;bottom: 5rem;left: 1%;"
+           type="button"
+           value="服务器内存">
+</a>
+<input class="form-control  form-control-lg" id="text" placeholder="主机地址"
+       style="background: transparent;color:blue;position: fixed;bottom: 5rem;right: 35%;width: 30%"
+       type="text">
+<!--
+<input type="text" placeholder="服务器IP最后一位" id="text" class="form-control"
+      style="color:blue;position: fixed;bottom: 5rem;left: 30rem ">
+--><input class="btn btn-default " id="autoflash"
+          style="background: transparent;color:blue;position: fixed;bottom: 5rem;right: 1%;" type="button"
+          value="已暂停刷新">
+</body>
+<script type="text/javascript">
+    //页面存在的最大ID
+    let maxid = 0;
+    //记录刷新状态
+    let flash = false;
+    //线程ID,与flash组合,再次点击自动刷刷新按钮杀线程
+    let thread;
+    let ip = 0;
+    $(document).ready(function () {
+        loadJson();
+    })
+
+    function loadJson() {
+        $.getJSON("./logs/getAll?maxid=" + maxid + "&ip=" + ip, function (data) {
+            let result = "";
+            for (let i = 0; i < data.length; i++) {
+                result += "<tr><td>" + data[i].id + "</td>";
+                result += "<td align='center'>" + data[i].time.slice(11) + "</td>";
+                result += "<td align='center' >" + data[i].client.slice(11) + "</td>";
+                result += "<td style=\"word-break: break-all\">" + data[i].name + "</td>";
+                result += "<td>" + data[i].ip + "</td></tr>";
+            }
+            $('#tbody').prepend(result);
+            maxid = data[0].id;
+        })
+    }
+
+    $(function () {
+        $('#autoflash').on('click', function () {
+            if (!flash) {
+                flash = true;
+                $('#autoflash').val("自动刷新中");
+                $('#autoflash').css('color', 'red');
+                thread = setInterval('loadJson()', 2000);
+            } else {
+                flash = false;
+                clearInterval(thread);
+                $('#autoflash').css('color', 'blue');
+                $('#autoflash').val("已暂停刷新");
+            }
+        });
+        $('#text').change(function () {
+            $('#tbody').children().remove();
+            ip = '192.168.10.' + $('#text').val();
+            maxid = 0;
+            loadJson();
+        })
+    })
+</script>
+</html>
+<!--https://www.runoob.com/try/try.php?filename=bootstrap3-table-basic-->
