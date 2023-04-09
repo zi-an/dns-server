@@ -15,6 +15,7 @@ import netty.dns.DnsConfig;
 import netty.dns.dao.LogEntity;
 import netty.dns.dao.LogMapper;
 import netty.dns.util.BeanContext;
+import netty.dns.util.Util;
 
 public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
@@ -59,7 +60,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
                     NetUtil.bytesToIpAddress(DnsCache.getDomainIpMapping().get(domain)));
             logMapper.insertOne(logsEntity);
         } catch (Exception e) {
-            System.out.println("exception:" + e);
+            System.out.println(Util.getNow() + "exception:" + e);
         } finally {
             ctx.writeAndFlush(datagramDnsResponse);
         }

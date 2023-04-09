@@ -84,7 +84,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="add_modal">增加信息</h4>
+                <h4 class="modal-title" id="add_modal">增加记录</h4>
             </div>
             <div class="modal-body">
                 <form>
@@ -92,10 +92,10 @@
                         <input type="text" id="insert_id" class="form-control" readonly/>
                     </div>
                     <div class="form-group">
-                        <input type="text" placeholder="名字" id="insert_domain" class="form-control"/>
+                        <input type="text" placeholder="域名" id="insert_domain" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <input type="text" placeholder="成绩" id="insert_ip" class="form-control"/>
+                        <input type="text" placeholder="地址" id="insert_ip" class="form-control"/>
                     </div>
                 </form>
 
@@ -159,12 +159,14 @@
     $(document).on("click", ".olk", function () {
         $.post("./record/update?id=" + $("#update_id").val() + "&domain=" + $("#update_domain").val() + "&ip="
             + $("#update_ip").val(), function (data) {
-            //$(this).children('td').append(delete_button);
-            _this.children('td').eq(1).text($("#update_id").val());
-            _this.children('td').eq(2).text($("#update_domain").val());
-            _this.children('td').eq(3).text($("#update_ip").val());
-            //$(_this).children('td').append(update_button)
-            alert("修改完毕")
+            if (data > 0) {
+                _this.children('td').eq(1).text($("#update_id").val());
+                _this.children('td').eq(2).text($("#update_domain").val());
+                _this.children('td').eq(3).text($("#update_ip").val());
+                alert("修改完毕")
+            } else if (data == 0) {
+                alert("IP地址不规范")
+            }
         })
     })
     //增加的功能
@@ -180,14 +182,13 @@
                 $("#insert_domain").val('');
                 $("#insert_ip").val('');
                 $("#tbody").append(add_string);
-            }else if(data==0){
-                $("#insert_id").val("IP输入错误!");
+            } else if (data == 0) {
+                alert("IP地址不合规")
                 $("#insertModal").modal('show');
-            }else if (data==-1){
-                $("#insert_id").val("域名已存在");
-
-            }alert()
-            $("#updateModal").modal('show');
+            } else if (data == -1) {
+                alert("域名已存在!");
+                $('#insertModal').modal('show');
+            }
         })
     })
 

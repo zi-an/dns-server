@@ -14,8 +14,11 @@ public interface RecordMapper {
     @Select("select * from records order by id ")
     List<RecordEntity> selectAll();
 
-    @Select("select * from records where domain not like '%mm' order by id ")
+    @Select("select * from records where id > 0 order by id ")
     List<RecordEntity> selectData();
+
+    @Select("select * from records where domain=#{domain}")
+    List<RecordEntity> selectByDomain(String domain);
 
     @Insert("insert into records(domain,ip) " +
             "values(#{domain},#{ip})")

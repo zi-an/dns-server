@@ -30,9 +30,11 @@ public class DnsRecord {
     @RequestMapping("/insert")
     long insertOne(@RequestParam(name = "domain") String domain,
                    @RequestParam(name = "ip") String ip) {
-        if (DnsCache.getDomainIpMapping().containsKey(domain)) {
+        if (recordMapper.selectByDomain(domain).size()>1) {
+            //已存在的域名,只能修改
             return -1;
         } else if (!Util.isIPv4(ip)) {
+            //不合规的ipv4
             return 0;
         } else {
             System.out.println(domain + ip);

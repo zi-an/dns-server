@@ -1,5 +1,8 @@
 package netty.dns.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * 工具类
  */
@@ -32,7 +35,18 @@ public class Util {
         }
     }
 
+    public static String getNow() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        return simpleDateFormat.format(new Date());
+    }
+
+    static String getNow(String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        return simpleDateFormat.format(new Date());
+    }
+
     public static void main(String[] args) {
         //ip2byte("192.168.10.1");
+
     }
 }

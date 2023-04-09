@@ -28,7 +28,7 @@ public class DnsCache {
         for (RecordEntity record : recordsMapper.selectAll()) {
             domainIpMapping.put(record.getDomain(), Util.ip2byte(record.getIp()));
         }
-        System.out.println("domainIpMapping had reloaded");
+        System.out.println(Util.getNow()+":DnsCache had reloaded");
     }
 
 }
