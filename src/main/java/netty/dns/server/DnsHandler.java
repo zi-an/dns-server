@@ -30,6 +30,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
 
     public void channelRead0(ChannelHandlerContext ctx, DatagramDnsQuery datagramDnsQuery) {
         DatagramDnsResponse datagramDnsResponse = new DatagramDnsResponse(datagramDnsQuery.recipient(), datagramDnsQuery.sender(), datagramDnsQuery.id());
+        String domain = null;
         try {
             DefaultDnsQuestion dnsQuestion = datagramDnsQuery.recordAt(DnsSection.QUESTION);
             datagramDnsResponse.addRecord(DnsSection.QUESTION, dnsQuestion);
@@ -37,10 +38,14 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
             ByteBuf byteBuf;
             //DefaultDnsRawRecord里域名是带顶级的.
             //所以带.的用dnsQuestion.name(),日常用的不带.的用domain
-            String domain = dnsQuestion.name();
+            domain = dnsQuestion.name();
             domain = domain.substring(0, domain.length() - 1);
             if (DnsCache.getDomainIpMapping().containsKey(domain)) {
                 //如果在ipMapping表中的,返回结果
+                byteBuf = Unpooled.wrappedBuffer(DnsCache.getDomainIpMapping().get(domain));
+            } else if (domain.indexOf("in-addr.arpa") > 0) {
+                //PTR记录,暂时默认为127.0.0.1,以后修复
+                DnsCache.getDomainIpMapping().put(domain, Util.ip2byte("127.0.0.1"));
                 byteBuf = Unpooled.wrappedBuffer(DnsCache.getDomainIpMapping().get(domain));
             } else {
                 // 不在 ipMapping表中的域名,从上游dns获取后加入到ipMapping表中
@@ -60,7 +65,7 @@ public class DnsHandler extends SimpleChannelInboundHandler<DatagramDnsQuery> {
                     NetUtil.bytesToIpAddress(DnsCache.getDomainIpMapping().get(domain)));
             logMapper.insertOne(logsEntity);
         } catch (Exception e) {
-            System.out.println(Util.getNow() + "exception:" + e);
+            System.out.println(Util.getNow() + ":" + domain + "exception:" + e);
         } finally {
             ctx.writeAndFlush(datagramDnsResponse);
         }
